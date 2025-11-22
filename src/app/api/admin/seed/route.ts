@@ -11,7 +11,7 @@ export async function GET(req: Request) {
   const exists = await Admin.findOne({ username });
   if (exists) {
     console.log(`Admin "${username}" already exists`);
-    return;
+    return NextResponse.json({ message: "ok" });
   }
 
   const admin = new Admin({ username, password });
