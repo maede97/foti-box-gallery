@@ -10,7 +10,7 @@ services:
       driver: none
 
   app:
-    image: ghcr.io/maede97/foti-box:latest
+    image: ghcr.io/maede97/foti-box-gallery:latest
     build:
       context: .
       Dockerfile: Dockerfile
@@ -31,7 +31,7 @@ services:
       - "traefik.http.routers.foti-box.rule=Host(`foti-box.com`)"
       - "traefik.http.routers.foti-box.entrypoints=websecure"
       - "traefik.http.routers.foti-box.tls=true"
-      - "traefik.http.routers.foti-box.tls.certresolver=letsecnrypt"
+      - "traefik.http.routers.foti-box.tls.certresolver=letsencrypt"
       - "traefik.http.services.foti-box.loadbalancer.server.port=3000"
 
     volumes: ./uploads:/data/uploads
