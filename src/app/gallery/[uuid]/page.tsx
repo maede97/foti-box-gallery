@@ -12,5 +12,3 @@ export default async function GalleryPage({ params }: { params: { uuid: string }
     </div>
   );
 }
-
-export const dynamic = 'force-dynamic';

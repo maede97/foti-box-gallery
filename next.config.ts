@@ -7,6 +7,13 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   compress: true,
   reactCompiler: true,
+  images: {
+    localPatterns: [
+      {
+        pathname: '/api/gallery',
+      },
+    ],
+  },
 };
 
 export default nextConfig;
