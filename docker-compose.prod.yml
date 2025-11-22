@@ -34,7 +34,8 @@ services:
       - "traefik.http.routers.foti-box.tls.certresolver=letsencrypt"
       - "traefik.http.services.foti-box.loadbalancer.server.port=3000"
 
-    volumes: ./uploads:/data/uploads
+    volumes:
+      - ./uploads:/data/uploads
 
 networks:
   traefik-proxy:
