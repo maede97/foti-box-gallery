@@ -8,11 +8,10 @@ interface ParamsType {
 }
 const GalleryPage: React.FC<{ params: React.Usable<ParamsType> }> = ({ params }) => {
   const { uuid } = React.use<ParamsType>(params);
-  if (!uuid) throw Error('uuid undefined');
 
   return (
-    <div className="">
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="">
+    <div>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
         <Image
           src={`/api/gallery?uuid=${uuid}`}
           alt="Photo"

@@ -6,6 +6,7 @@ const ImageUpload: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined);
   const [hasUploaded, setHasUploaded] = useState<boolean>(false);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
@@ -27,6 +28,8 @@ const ImageUpload: React.FC = () => {
   };
 
   const handleUpload = async () => {
+    setIsUploading(true);
+
     if (!selectedFile) {
       setError('Bitte zuerst eine Datei auswählen.');
       return;
@@ -48,8 +51,10 @@ const ImageUpload: React.FC = () => {
       setSelectedFile(undefined);
       setPreviewUrl(undefined);
       setHasUploaded(true);
+      setIsUploading(false);
     } catch (err) {
       setError(err.message || 'Ein Fehler ist aufgetreten.');
+      setIsUploading(false);
     }
   };
 
@@ -66,7 +71,9 @@ const ImageUpload: React.FC = () => {
       {error && <p className="p-2 text-center text-sm text-orange-600">{error}</p>}
       {message && <p className="p-2 text-center text-sm text-stone-900">{message}</p>}
 
-      {!hasUploaded && (
+      {isUploading && <div className="text-center text-stone-900">Lade hoch...</div>}
+
+      {!hasUploaded && !isUploading && (
         <div className="space-y-3">
           <div className="flex flex-col gap-1">
             <label className="text-xs tracking-wide text-stone-900 uppercase">Bild auswählen</label>
