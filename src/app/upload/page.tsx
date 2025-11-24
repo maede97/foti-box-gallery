@@ -1,4 +1,5 @@
 'use client';
+import { LoadingSpinner } from '@/components/ui/loading';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 
@@ -71,7 +72,12 @@ const ImageUpload: React.FC = () => {
       {error && <p className="p-2 text-center text-sm text-orange-600">{error}</p>}
       {message && <p className="p-2 text-center text-sm text-stone-900">{message}</p>}
 
-      {isUploading && <div className="text-center text-stone-900">Lade hoch...</div>}
+      {isUploading && (
+        <div className="text-center text-stone-900">
+          <LoadingSpinner color={'stone-900'} />
+          Lade hoch...
+        </div>
+      )}
 
       {!hasUploaded && !isUploading && (
         <div className="space-y-3">

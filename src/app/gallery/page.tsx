@@ -2,12 +2,14 @@
 
 import GalleryDisplay from '@/components/gallery/display';
 import GalleryLogin from '@/components/gallery/login';
-import { useState } from 'react';
+import { LoadingSpinner } from '@/components/ui/loading';
+import { useEffect, useState } from 'react';
 
 export default function Gallery() {
   const [images, setImages] = useState<string[]>([]);
   const [error, setError] = useState('');
   const [loggedIn, setLoggedIn] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
 
   async function fetchGallery(selectedEvent, password) {
     setError('');
@@ -29,6 +31,18 @@ export default function Gallery() {
     const data = await res.json();
     setImages(data.map((img: { uuid: string }) => img.uuid));
     setLoggedIn(true);
+  }
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
+  if (!hydrated) {
+    return (
+      <div className="absolute flex size-full items-center justify-center">
+        <LoadingSpinner color={'stone-200'} />
+      </div>
+    );
   }
 
   return (
