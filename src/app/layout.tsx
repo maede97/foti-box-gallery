@@ -1,4 +1,4 @@
-import '@/styles/globals.css';
+import '@/styles/globals.scss';
 
 import { Metadata } from 'next';
 import { Inter, Montserrat } from 'next/font/google';
@@ -27,7 +27,7 @@ interface LayoutProperties {
 const RootLayout: React.FC<LayoutProperties> = async ({ children }) => {
   return (
     <html className={`${montserrat.className} ${inter.className}`} lang="en">
-      <body className="bg-stone-900 p-6 text-stone-200">
+      <body className="bg-primary text-secondary">
         <main>{children}</main>
       </body>
     </html>

@@ -40,13 +40,13 @@ export default function Gallery() {
   if (!hydrated) {
     return (
       <div className="absolute flex size-full items-center justify-center">
-        <LoadingSpinner color={'stone-200'} />
+        <LoadingSpinner color={'secondary'} />
       </div>
     );
   }
 
   return (
-    <div>
+    <div className="m-6">
       {!loggedIn && <GalleryLogin fetchGallery={fetchGallery} error={error} />}
       {loggedIn && <GalleryDisplay images={images} />}
     </div>

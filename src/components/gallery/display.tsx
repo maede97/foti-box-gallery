@@ -47,7 +47,7 @@ const GalleryDisplay: React.FC<{ images: string[] }> = ({ images }) => {
               src={`/api/gallery?uuid=${uuid}`}
               alt="Photo"
               fill
-              className="bg-stone-900 object-contain"
+              className="bg-primary object-contain"
             />
           </div>
         ))}
@@ -62,21 +62,21 @@ const GalleryDisplay: React.FC<{ images: string[] }> = ({ images }) => {
             exit={{ opacity: 0 }}
           >
             <button
-              className="absolute top-4 right-4 z-100 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-stone-200 text-xl text-stone-900"
+              className="text-primary bg-secondary hover:bg-accent absolute top-4 right-4 z-100 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-xl"
               onClick={closeGallery}
             >
               &times;
             </button>
 
             <button
-              className="absolute left-4 z-100 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-stone-200 text-xl text-stone-900"
+              className="text-primary bg-secondary hover:bg-accent absolute left-4 z-100 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-xl"
               onClick={prevImage}
             >
               &#8249;
             </button>
 
             <button
-              className="absolute right-4 z-100 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-stone-200 text-xl text-stone-900"
+              className="text-primary bg-secondary hover:bg-accent absolute right-4 z-100 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-xl"
               onClick={nextImage}
             >
               &#8250;

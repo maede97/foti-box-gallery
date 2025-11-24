@@ -24,9 +24,9 @@ const GalleryLogin: React.FC<{ fetchGallery; error: string }> = ({ fetchGallery,
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mx-auto max-w-xl bg-stone-200 p-6"
+      className="bg-secondary mx-auto max-w-xl p-6"
     >
-      <h2 className="mb-6 text-lg font-semibold tracking-wide text-stone-900 uppercase">
+      <h2 className="text-primary mb-6 text-lg font-semibold tracking-wide uppercase">
         Anmelden, um die Galerie anzusehen
       </h2>
 
@@ -39,11 +39,11 @@ const GalleryLogin: React.FC<{ fetchGallery; error: string }> = ({ fetchGallery,
 
       <div className="space-y-3">
         <div className="flex flex-col gap-1">
-          <label className="text-xs tracking-wide text-stone-900 uppercase">Event</label>
+          <label className="text-primary text-xs tracking-wide uppercase">Event</label>
           <select
             value={selectedEvent}
             onChange={(e) => setSelectedEvent(e.target.value)}
-            className="w-full bg-stone-900 p-2 text-sm text-stone-200 focus:outline-none"
+            className="bg-primary text-secondary w-full p-2 text-sm focus:outline-none"
           >
             <option value="">Event auswählen</option>
             {events.map((evt) => (
@@ -55,7 +55,7 @@ const GalleryLogin: React.FC<{ fetchGallery; error: string }> = ({ fetchGallery,
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className="text-xs tracking-wide text-stone-900 uppercase">Passwort</label>
+          <label className="text-primary text-xs tracking-wide uppercase">Passwort</label>
           <input
             type="password"
             placeholder="••••••••"
@@ -66,13 +66,13 @@ const GalleryLogin: React.FC<{ fetchGallery; error: string }> = ({ fetchGallery,
                 fetchGallery(selectedEvent, password);
               }
             }}
-            className="w-full border bg-stone-900 p-2 text-sm text-stone-200 focus:outline-none"
+            className="bg-primary text-secondary w-full border p-2 text-sm focus:outline-none"
           />
         </div>
 
         <button
           onClick={() => fetchGallery(selectedEvent, password)}
-          className="mt-4 w-full cursor-pointer bg-stone-900 p-3 text-sm font-semibold tracking-wide text-stone-200 uppercase focus:outline-none"
+          className="bg-primary text-secondary mt-4 w-full cursor-pointer p-3 text-sm font-semibold tracking-wide uppercase focus:outline-none"
         >
           Galerie ansehen
         </button>

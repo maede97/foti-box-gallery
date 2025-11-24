@@ -201,13 +201,13 @@ export default function AdminPage() {
 
   if (!loggedIn) {
     return (
-      <div>
+      <div className="p-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mx-auto max-w-xl bg-stone-200 p-6"
+          className="bg-secondary mx-auto max-w-xl p-6"
         >
-          <h2 className="mb-6 text-lg font-semibold tracking-wide text-stone-900 uppercase">
+          <h2 className="text-primary mb-6 text-lg font-semibold tracking-wide uppercase">
             Admin Login
           </h2>
           {error && <p className="p-2 text-center text-sm text-orange-600">{error}</p>}
@@ -218,7 +218,7 @@ export default function AdminPage() {
               placeholder="Username"
               value={adminUsername}
               onChange={(e) => setAdminUsername(e.target.value)}
-              className="w-full bg-stone-900 p-2 text-sm text-stone-200 focus:outline-none"
+              className="bg-primary text-secondary w-full p-2 text-sm focus:outline-none"
             />
             <input
               type="password"
@@ -230,11 +230,11 @@ export default function AdminPage() {
                   handleLogin();
                 }
               }}
-              className="w-full bg-stone-900 p-2 text-sm text-stone-200 focus:outline-none"
+              className="bg-primary text-secondary w-full p-2 text-sm focus:outline-none"
             />
             <button
               onClick={handleLogin}
-              className="mt-4 w-full cursor-pointer bg-stone-900 p-3 text-sm font-semibold tracking-wide text-stone-200 uppercase focus:outline-none"
+              className="bg-primary text-secondary mt-4 w-full cursor-pointer p-3 text-sm font-semibold tracking-wide uppercase focus:outline-none"
             >
               Login
             </button>
@@ -250,7 +250,7 @@ export default function AdminPage() {
         <H1>Admin Dashboard</H1>
         <button
           onClick={handleLogout}
-          className="cursor-pointer rounded-xl bg-red-600 px-4 py-2 font-semibold shadow-lg transition hover:bg-red-700"
+          className="bg-error hover:bg-error-dark cursor-pointer rounded-xl px-4 py-2 font-semibold shadow-lg transition"
         >
           Logout
         </button>
@@ -263,20 +263,20 @@ export default function AdminPage() {
           {events.map((evt) => (
             <div
               key={evt._id}
-              className="flex items-center justify-between rounded-xl border border-stone-500 bg-stone-200 p-3 text-stone-900"
+              className="text-primary bg-secondary border-accent flex items-center justify-between rounded-xl border p-3"
             >
               <span className={evt.active ? 'font-bold' : ''}>{evt.name}</span>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => handleSetAllowUserUpload(evt._id, !evt.allow_user_uploads)}
-                  className={`cursor-pointer rounded-xl px-3 py-1 font-semibold transition ${evt.allow_user_uploads ? 'bg-green-600 hover:bg-green-800' : 'bg-red-600 hover:bg-red-800'}`}
+                  className={`cursor-pointer rounded-xl px-3 py-1 font-semibold transition ${evt.allow_user_uploads ? 'bg-success hover:bg-success-dark' : 'bg-error hover:bg-error-dark'}`}
                 >
                   Allows User Uploads
                 </button>
                 {!evt.active && (
                   <button
                     onClick={() => handleDeleteEvent(evt._id)}
-                    className="cursor-pointer rounded-xl bg-red-600 px-3 py-1 font-semibold transition hover:bg-red-800"
+                    className="hover:bg-error-dark bg-error cursor-pointer rounded-xl px-3 py-1 font-semibold transition"
                   >
                     Delete
                   </button>
@@ -284,12 +284,12 @@ export default function AdminPage() {
                 {!evt.active ? (
                   <button
                     onClick={() => switchActiveEvent(evt._id)}
-                    className="cursor-pointer rounded-xl bg-stone-900 px-3 py-1 font-semibold text-stone-200 transition hover:bg-stone-700"
+                    className="bg-primary text-secondary hover:bg-accent-dark cursor-pointer rounded-xl px-3 py-1 font-semibold transition"
                   >
                     Set Active
                   </button>
                 ) : (
-                  <span className="font-semibold text-green-400">Active</span>
+                  <span className="text-success font-semibold">Active</span>
                 )}
               </div>
             </div>
@@ -306,7 +306,7 @@ export default function AdminPage() {
             placeholder="Event Name"
             value={eventName}
             onChange={(e) => setEventName(e.target.value)}
-            className="rounded-xl bg-stone-200 p-3 text-stone-900 focus:outline-none"
+            className="text-primary bg-secondary rounded-xl p-3 focus:outline-none"
           />
           <input
             type="text"
@@ -318,16 +318,16 @@ export default function AdminPage() {
                 handleAddEvent();
               }
             }}
-            className="rounded-xl bg-stone-200 p-3 text-stone-900 focus:outline-none"
+            className="text-primary bg-secondary rounded-xl p-3 focus:outline-none"
           />
           <button
             onClick={handleAddEvent}
-            className="cursor-pointer rounded-xl bg-stone-200 px-4 py-2 font-semibold text-stone-900 shadow-lg transition hover:bg-stone-700"
+            className="text-primary bg-secondary hover:bg-accent cursor-pointer rounded-xl px-4 py-2 font-semibold shadow-lg transition"
           >
             Add Event
           </button>
         </div>
-        {error && <p className="mt-2 text-red-400">{error}</p>}
+        {error && <p className="text-error mt-2">{error}</p>}
       </section>
 
       {/* Images */}
@@ -336,7 +336,7 @@ export default function AdminPage() {
         {loading ? (
           <p>Loading images...</p>
         ) : error ? (
-          <p className="text-red-400">{error}</p>
+          <p className="text-error">{error}</p>
         ) : (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
             {images.map((img) => (
@@ -348,7 +348,7 @@ export default function AdminPage() {
                 <Link href={`/gallery/${img.uuid}`} target="_blank">
                   <Image
                     src={`/api/gallery?uuid=${img.uuid}`}
-                    alt="Photo"
+                    alt="foti-box.com"
                     width={300}
                     height={200}
                     className="h-40 w-full object-cover"
@@ -356,7 +356,7 @@ export default function AdminPage() {
                 </Link>
                 <button
                   onClick={() => handleDeleteImage(img.uuid)}
-                  className="absolute top-4 right-4 z-100 flex h-5 w-5 cursor-pointer items-center justify-center rounded-full bg-red-600 text-stone-900 transition hover:bg-red-900"
+                  className="text-primary bg-error hover:bg-error-dark absolute top-4 right-4 z-100 flex h-5 w-5 cursor-pointer items-center justify-center rounded-full transition"
                 >
                   X
                 </button>

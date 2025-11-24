@@ -10,6 +10,7 @@ interface ParamsType {
 const GalleryPage: React.FC<{ params: React.Usable<ParamsType> }> = ({ params }) => {
   const { uuid } = React.use<ParamsType>(params);
   const [hydrated, setHydrated] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     setHydrated(true);
@@ -18,22 +19,32 @@ const GalleryPage: React.FC<{ params: React.Usable<ParamsType> }> = ({ params })
   if (!hydrated) {
     return (
       <div className="absolute flex size-full items-center justify-center">
-        <LoadingSpinner color={'stone-200'} />
+        <LoadingSpinner color={'secondary'} />
       </div>
     );
   }
 
   return (
-    <div>
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-        <Image
-          src={`/api/gallery?uuid=${uuid}`}
-          alt="Photo"
-          fill
-          className="bg-stone-900 object-contain"
-        />
-      </motion.div>
-    </div>
+    <>
+      {error && (
+        <div className="text-error absolute flex size-full items-center justify-center">
+          {error}
+        </div>
+      )}
+      {!error && (
+        <div className="m-6">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <Image
+              src={`/api/gallery?uuid=${uuid}`}
+              alt="Photo"
+              fill
+              className="bg-primary object-contain"
+              onError={() => setError('Bild konnte nicht geladen werden.')}
+            />
+          </motion.div>
+        </div>
+      )}
+    </>
   );
 };
 

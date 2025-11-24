@@ -1,7 +1,7 @@
 'use client';
 import { LoadingSpinner } from '@/components/ui/loading';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const ImageUpload: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
@@ -10,6 +10,7 @@ const ImageUpload: React.FC = () => {
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [hydrated, setHydrated] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage('');
@@ -59,22 +60,34 @@ const ImageUpload: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
+  if (!hydrated) {
+    return (
+      <div className="absolute flex size-full items-center justify-center">
+        <LoadingSpinner color={'secondary'} />
+      </div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mx-auto max-w-xl bg-stone-200 p-6"
+      className="bg-secondary m-6 mx-auto max-w-xl p-6"
     >
-      <h2 className="mb-6 text-lg font-semibold tracking-wide text-stone-900 uppercase">
+      <h2 className="text-primary mb-6 text-lg font-semibold tracking-wide uppercase">
         Bild hochladen
       </h2>
 
       {error && <p className="p-2 text-center text-sm text-orange-600">{error}</p>}
-      {message && <p className="p-2 text-center text-sm text-stone-900">{message}</p>}
+      {message && <p className="text-primary p-2 text-center text-sm">{message}</p>}
 
       {isUploading && (
-        <div className="text-center text-stone-900">
-          <LoadingSpinner color={'stone-900'} />
+        <div className="text-primary text-center">
+          <LoadingSpinner color={'primary'} />
           Lade hoch...
         </div>
       )}
@@ -82,12 +95,12 @@ const ImageUpload: React.FC = () => {
       {!hasUploaded && !isUploading && (
         <div className="space-y-3">
           <div className="flex flex-col gap-1">
-            <label className="text-xs tracking-wide text-stone-900 uppercase">Bild auswählen</label>
+            <label className="text-primary text-xs tracking-wide uppercase">Bild auswählen</label>
             <input
               type="file"
               accept="image/*"
               onChange={handleFileChange}
-              className="w-full border bg-stone-900 p-2 text-sm text-stone-200 focus:outline-none"
+              className="bg-primary text-secondary w-full border p-2 text-sm focus:outline-none"
             />
           </div>
 
@@ -96,14 +109,14 @@ const ImageUpload: React.FC = () => {
               <img
                 src={previewUrl}
                 alt="Vorschau"
-                className="max-h-60 w-full rounded border border-stone-400 object-contain"
+                className="border-accent max-h-60 w-full rounded border object-contain"
               />
             </div>
           )}
 
           <button
             onClick={handleUpload}
-            className="mt-4 w-full cursor-pointer bg-stone-900 p-3 text-sm font-semibold tracking-wide text-stone-200 uppercase focus:outline-none"
+            className="bg-primary text-secondary mt-4 w-full cursor-pointer p-3 text-sm font-semibold tracking-wide uppercase focus:outline-none"
           >
             Hochladen
           </button>
