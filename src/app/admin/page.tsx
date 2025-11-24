@@ -135,7 +135,6 @@ export default function AdminPage() {
       return;
     }
 
-    alert('Event created successfully!');
     setEventName('');
     setEventPassword('');
     fetchEvents();
@@ -176,7 +175,6 @@ export default function AdminPage() {
       setError(data.error || 'Failed to update event');
       return;
     }
-    alert(`Event does now${allow_user_uploads ? '' : ' not'} allow uploads.`);
     fetchEvents();
   }
 
@@ -315,6 +313,11 @@ export default function AdminPage() {
             placeholder="Password"
             value={eventPassword}
             onChange={(e) => setEventPassword(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleAddEvent();
+              }
+            }}
             className="rounded-xl bg-stone-200 p-3 text-stone-900 focus:outline-none"
           />
           <button
@@ -340,7 +343,7 @@ export default function AdminPage() {
               <motion.div
                 key={img.uuid}
                 whileHover={{ scale: 1.05 }}
-                className="relative overflow-hidden rounded-xl border border-gray-800 shadow-lg"
+                className="relative overflow-hidden rounded-xl shadow-lg"
               >
                 <Link href={`/gallery/${img.uuid}`} target="_blank">
                   <Image

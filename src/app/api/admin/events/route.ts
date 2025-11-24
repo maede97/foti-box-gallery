@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   const authCheck = requireAdmin(req);
   if (!authCheck) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const events = await Event.find({}).sort({ active: -1, name: 1 });
+  const events = await Event.find({}).sort({ createdAt: -1 });
   return NextResponse.json(events);
 }
 
