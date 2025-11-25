@@ -210,7 +210,7 @@ export default function AdminPage() {
           <h2 className="text-primary mb-6 text-lg font-semibold tracking-wide uppercase">
             Admin Login
           </h2>
-          {error && <p className="p-2 text-center text-sm text-orange-600">{error}</p>}
+          {error && <p className="p-2 text-center text-sm text-error">{error}</p>}
 
           <div className="space-y-3">
             <input
