@@ -324,7 +324,7 @@ export default function AdminPage() {
   }
 
   return (
-    <div>
+    <div className="p-6">
       <div className="mb-6 flex items-center justify-between">
         <H1>Admin Dashboard</H1>
         <button
