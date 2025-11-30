@@ -1,6 +1,8 @@
 'use client';
 
 import { H1 } from '@/components/ui/headings';
+import { IBox } from '@/models/box';
+import { IEvent } from '@/models/event';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -29,12 +31,8 @@ export default function AdminPage() {
   const [adminPassword, setAdminPassword] = useState('');
   const [loggedIn, setLoggedIn] = useState(false);
   const [token, setToken] = useState<string | null>(null);
-  const [events, setEvents] = useState<
-    { _id: string; name: string; active: boolean; allow_user_uploads: boolean; password: string }[]
-  >([]);
-  const [boxes, setBoxes] = useState<
-    { _id: string; label: string; accessToken: string; lastUpload?: string; active: boolean }[]
-  >([]);
+  const [events, setEvents] = useState<IEvent[]>([]);
+  const [boxes, setBoxes] = useState<IBox[]>([]);
 
   async function fetchEvents() {
     if (!token) return;
