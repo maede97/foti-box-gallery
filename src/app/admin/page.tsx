@@ -15,8 +15,13 @@ interface ImageType {
 
 export default function AdminPage() {
   const [images, setImages] = useState<ImageType[]>([]);
+
   const [eventName, setEventName] = useState('');
   const [eventPassword, setEventPassword] = useState('');
+
+  const [boxLabel, setBoxLabel] = useState('');
+  const [boxAccessToken, setBoxAccessToken] = useState('');
+
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -25,7 +30,10 @@ export default function AdminPage() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [token, setToken] = useState<string | null>(null);
   const [events, setEvents] = useState<
-    { _id: string; name: string; active: boolean; allow_user_uploads: boolean }[]
+    { _id: string; name: string; active: boolean; allow_user_uploads: boolean; password: string }[]
+  >([]);
+  const [boxes, setBoxes] = useState<
+    { _id: string; label: string; accessToken: string; lastUpload?: string; active: boolean }[]
   >([]);
 
   async function fetchEvents() {
@@ -36,6 +44,17 @@ export default function AdminPage() {
     if (res.ok) {
       const data = await res.json();
       setEvents(data);
+    }
+  }
+
+  async function fetchBoxes() {
+    if (!token) return;
+    const res = await fetch('/api/admin/box', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setBoxes(data);
     }
   }
 
@@ -64,6 +83,7 @@ export default function AdminPage() {
     if (loggedIn && token) {
       fetchEvents();
       fetchImages();
+      fetchBoxes();
     }
   }, [loggedIn, token]);
 
@@ -138,6 +158,67 @@ export default function AdminPage() {
     setEventName('');
     setEventPassword('');
     fetchEvents();
+  }
+
+  async function handleAddBox() {
+    if (!boxLabel || !boxAccessToken) return setError('Provide label and access token');
+
+    const res = await fetch('/api/admin/box', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ label: boxLabel, accessToken: boxAccessToken }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      setError(data.error || 'Failed to add box');
+      return;
+    }
+
+    setBoxLabel('');
+    setBoxAccessToken('');
+    fetchBoxes();
+  }
+
+  async function handleDeleteBox(boxID: string) {
+    if (!confirm('Are you sure you want to delete this box?')) return;
+
+    const res = await fetch('/api/admin/box', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ boxID }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      setError(data.error || 'Failed to delete box');
+      return;
+    }
+    setBoxes(boxes.filter((box) => box._id !== boxID));
+  }
+
+  async function handleBoxActive(boxID: string, active: boolean) {
+    const res = await fetch('/api/admin/box', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ boxID, active }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      setError(data.error || 'Failed to update box');
+      return;
+    }
+    fetchBoxes();
   }
 
   async function handleDeleteEvent(eventID: string) {
@@ -266,6 +347,7 @@ export default function AdminPage() {
               className="text-primary bg-secondary border-accent flex items-center justify-between rounded-xl border p-3"
             >
               <span className={evt.active ? 'font-bold' : ''}>{evt.name}</span>
+              <span className="text-primary/70 text-sm">(Password: {evt.password})</span>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => handleSetAllowUserUpload(evt._id, !evt.allow_user_uploads)}
@@ -273,14 +355,12 @@ export default function AdminPage() {
                 >
                   Allows User Uploads
                 </button>
-                {!evt.active && (
-                  <button
-                    onClick={() => handleDeleteEvent(evt._id)}
-                    className="hover:bg-error-dark bg-error cursor-pointer rounded-xl px-3 py-1 font-semibold transition"
-                  >
-                    Delete
-                  </button>
-                )}
+                <button
+                  onClick={() => handleDeleteEvent(evt._id)}
+                  className="hover:bg-error-dark bg-error cursor-pointer rounded-xl px-3 py-1 font-semibold transition"
+                >
+                  Delete
+                </button>
                 {!evt.active ? (
                   <button
                     onClick={() => switchActiveEvent(evt._id)}
@@ -328,6 +408,80 @@ export default function AdminPage() {
           </button>
         </div>
         {error && <p className="text-error mt-2">{error}</p>}
+      </section>
+
+      {/* Foto-box */}
+
+      <section>
+        <h2 className="mb-4 text-2xl font-semibold">Boxes</h2>
+        <div className="space-y-2">
+          {boxes.map((box) => (
+            <div
+              key={box._id}
+              className="text-primary bg-secondary border-accent flex items-center justify-between rounded-xl border p-3"
+            >
+              <span className={box.active ? 'font-bold' : ''}>
+                {box.label} - Last Upload: {/* format: dd.mm.yyyy hh:mm, do NOT use browser */}
+                {box.lastUpload ? new Date(box.lastUpload).toLocaleString('de-CH') : 'Never'}
+              </span>
+              <span className="text-primary/70 text-sm">(Access Token: {box.accessToken})</span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handleDeleteBox(box._id)}
+                  className="hover:bg-error-dark bg-error cursor-pointer rounded-xl px-3 py-1 font-semibold transition"
+                >
+                  Delete
+                </button>
+                {box.active ? (
+                  <button
+                    onClick={() => handleBoxActive(box._id, false)}
+                    className="bg-primary text-secondary hover:bg-accent-dark cursor-pointer rounded-xl px-3 py-1 font-semibold transition"
+                  >
+                    Deactivate
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleBoxActive(box._id, true)}
+                    className="bg-primary text-secondary hover:bg-accent-dark cursor-pointer rounded-xl px-3 py-1 font-semibold transition"
+                  >
+                    Activate
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+      {/* new box */}
+      <section className="my-8">
+        <h2 className="mb-4 text-2xl font-semibold">Add New Box</h2>
+        <div className="flex flex-wrap items-center gap-3">
+          <input
+            type="text"
+            placeholder="Box Label"
+            value={boxLabel}
+            onChange={(e) => setBoxLabel(e.target.value)}
+            className="text-primary bg-secondary rounded-xl p-3 focus:outline-none"
+          />
+          <input
+            type="text"
+            placeholder="Access Token"
+            value={boxAccessToken}
+            onChange={(e) => setBoxAccessToken(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleAddBox();
+              }
+            }}
+            className="text-primary bg-secondary rounded-xl p-3 focus:outline-none"
+          />
+          <button
+            onClick={handleAddBox}
+            className="text-primary bg-secondary hover:bg-accent cursor-pointer rounded-xl px-4 py-2 font-semibold shadow-lg transition"
+          >
+            Add Box
+          </button>
+        </div>
       </section>
 
       {/* Images */}

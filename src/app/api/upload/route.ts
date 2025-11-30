@@ -1,5 +1,6 @@
 import { environmentVariables } from '@/config/environment';
 import { connectToDatabase } from '@/lib/mongodb';
+import Box from '@/models/box';
 import Event from '@/models/event';
 import Image from '@/models/image';
 import fs from 'fs/promises';
@@ -61,12 +62,22 @@ export async function PUT(req: Request) {
 }
 
 export async function POST(req: Request) {
+  await connectToDatabase();
+
   const apiKey = req.headers.get('x-api-key');
-  if (!apiKey || apiKey !== environmentVariables.UPLOAD_API_KEY) {
+  if (!apiKey) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  await connectToDatabase();
+  // check if api key is valid by selecting a box from the DB
+  const box = await Box.findOne({ accessToken: apiKey, active: true });
+  if (!box) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // update lastUpload timestamp
+  box.lastUpload = new Date();
+  await box.save();
 
   const formData = await req.formData();
   const file = formData.get('file') as File;

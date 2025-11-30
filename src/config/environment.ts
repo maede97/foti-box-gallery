@@ -7,7 +7,6 @@ export const environmentVariables = createEnv({
     INIT_ADMIN_PW: z.string(),
     MONGO_URI: z.url(),
     UPLOAD_FOLDER: z.string(),
-    UPLOAD_API_KEY: z.string(),
     JWT_SECRET: z.string(),
   },
   client: {},
