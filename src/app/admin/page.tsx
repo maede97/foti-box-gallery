@@ -408,8 +408,7 @@ export default function AdminPage() {
         {error && <p className="text-error mt-2">{error}</p>}
       </section>
 
-      {/* Foto-box */}
-
+      {/* boxes */}
       <section>
         <h2 className="mb-4 text-2xl font-semibold">Boxes</h2>
         <div className="space-y-2">

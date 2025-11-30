@@ -4,6 +4,9 @@ import Event from '@/models/event';
 import Image from '@/models/image';
 import { NextRequest, NextResponse } from 'next/server';
 import { deleteImage } from '../delete-image/route';
+import path from 'path';
+import { environmentVariables } from '@/config/environment';
+import fs from 'fs/promises';
 
 export async function GET(req: NextRequest) {
   await connectToDatabase();
@@ -25,9 +28,6 @@ export async function DELETE(req: NextRequest) {
 
   // check if event is active
   const event = await Event.findById(eventID);
-  if (event.active) {
-    return NextResponse.json({ error: 'Event is active' }, { status: 404 });
-  }
 
   const images = await Image.find({ event: eventID });
 
@@ -43,6 +43,10 @@ export async function DELETE(req: NextRequest) {
 
   // delete event
   await Event.findByIdAndDelete(eventID);
+
+  // delete upload folder
+  const eventDir = path.join(environmentVariables.UPLOAD_FOLDER, eventID);
+  await fs.rm(eventDir, { recursive: true, force: true });
 
   return NextResponse.json({ status: 'ok' });
 }
