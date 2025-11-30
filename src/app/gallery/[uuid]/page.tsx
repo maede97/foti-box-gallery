@@ -39,7 +39,7 @@ const GalleryPage: React.FC<{ params: React.Usable<ParamsType> }> = ({ params })
               alt="Photo"
               fill
               className="bg-primary object-contain"
-              onError={() => setError('Bild konnte nicht geladen werden.')}
+              onError={() => setError('Dieses Bild existiert nicht (mehr).')}
             />
           </motion.div>
         </div>
