@@ -9,10 +9,11 @@ Visit [foti-box.com](https://foti-box.com)!
 - Typescript
 - React
 - Next
+- pnpm package manager
 
 ## Functionality
 
-- Admin panel (add events)
+- Admin panel (add events, boxes, manage images)
 - Upload panel (guests can upload their images)
 - Gallery view (show all images for an event)
 - Single Image view (show only uploaded images)
