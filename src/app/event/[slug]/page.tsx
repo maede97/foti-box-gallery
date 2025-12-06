@@ -1,6 +1,6 @@
 import { connectToDatabase } from '@/lib/mongodb';
 import event from '@/models/event';
-import { EventPageClient } from '@/pages/event-client';
+import EventPageClient from '@/pages/event-client';
 import { notFound } from 'next/navigation';
 import React from 'react';
 
