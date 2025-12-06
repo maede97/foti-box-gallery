@@ -412,7 +412,7 @@ export default function AdminPage() {
                     onClick={() => handleSetAllowUserUpload(evt._id, !evt.allow_user_uploads)}
                     className={`cursor-pointer rounded-xl px-3 py-1 font-semibold transition ${evt.allow_user_uploads ? 'bg-success hover:bg-success-dark' : 'bg-error hover:bg-error-dark'}`}
                   >
-                    {evt.allow_user_uploads ? 'Yes' : 'No'}
+                    {evt.allow_user_uploads ? 'Ja' : 'Nein'}
                   </button>
                 </td>
                 <td className="p-3">
