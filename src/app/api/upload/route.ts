@@ -10,6 +10,8 @@ import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
 const uploadFile = async (file: File, eventId: ObjectId) => {
+  await connectToDatabase();
+
   // Generate a unique filename
   const fileExtension = path.extname(file.name) || '.jpg'; // default to .jpg if missing
   const fileUuid = uuidv4();
