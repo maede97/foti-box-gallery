@@ -14,6 +14,6 @@ export function adminAuth(req: NextRequest) {
 
 export function requireAdmin(req: NextRequest) {
   const payload = adminAuth(req);
-  if (!payload) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!payload) return undefined; // 401 Unauthorized
   return payload;
 }

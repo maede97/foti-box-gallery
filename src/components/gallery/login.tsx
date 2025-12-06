@@ -14,7 +14,7 @@ const GalleryLogin: React.FC<{ fetchGallery; error: string }> = ({ fetchGallery,
   const [password, setPassword] = useState('');
 
   useEffect(() => {
-    fetch('/api/admin/events')
+    fetch('/api/gallery/events')
       .then((res) => res.json())
       .then((data) => setEvents(data))
       .catch(() => setError2('Fehler. Bitte lade die Seite neu um es erneut zu versuchen.'));
