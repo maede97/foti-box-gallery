@@ -1,7 +1,7 @@
 'use client';
 import { LoadingSpinner } from '@/components/ui/loading';
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const ImageUploadClient: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
@@ -10,7 +10,6 @@ const ImageUploadClient: React.FC = () => {
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const [hydrated, setHydrated] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage('');
@@ -60,18 +59,6 @@ const ImageUploadClient: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    setHydrated(true);
-  }, []);
-
-  if (!hydrated) {
-    return (
-      <div className="absolute flex size-full items-center justify-center">
-        <LoadingSpinner color={'secondary'} />
-      </div>
-    );
-  }
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -106,9 +93,11 @@ const ImageUploadClient: React.FC = () => {
 
           {previewUrl && (
             <div className="mt-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={previewUrl}
                 alt="Vorschau"
+                width={100}
                 className="border-accent max-h-60 w-full rounded border object-contain"
               />
             </div>

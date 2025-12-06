@@ -56,15 +56,13 @@ export default function AdminPage() {
   const [showAddEvent, setShowAddEvent] = useState(false);
   const [showAddBox, setShowAddBox] = useState(false);
 
-  async function fetchEvents() {
+  function fetchEvents() {
     if (!token) return;
-    const res = await fetch('/api/admin/events', {
+    fetch('/api/admin/events', {
       headers: { Authorization: `Bearer ${token}` },
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setEvents(data);
-    }
+    })
+      .then((data) => data.json())
+      .then((json) => setEvents(json));
   }
 
   async function switchActiveEvent(eventId: string) {
@@ -176,15 +174,13 @@ export default function AdminPage() {
     }
   }
 
-  async function fetchBoxes() {
+  function fetchBoxes() {
     if (!token) return;
-    const res = await fetch('/api/admin/box', {
+    fetch('/api/admin/box', {
       headers: { Authorization: `Bearer ${token}` },
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setBoxes(data);
-    }
+    })
+      .then((data) => data.json())
+      .then((json) => setBoxes(json));
   }
 
   async function handleAddBox() {
@@ -301,6 +297,7 @@ export default function AdminPage() {
       fetchImages();
       fetchBoxes();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loggedIn, token]);
 
   if (!loggedIn) {

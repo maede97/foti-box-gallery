@@ -1,24 +1,24 @@
-import { ErrorPage } from '@/app/pages/error';
+import { ErrorPage } from '@/pages/error';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 const GalleryDisplay: React.FC<{ images: string[]; title: string }> = ({ images, title }) => {
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
   const [direction, setDirection] = useState<number>(0);
 
-  const openGallery = (index: number) => setCurrentIndex(index);
-  const closeGallery = () => setCurrentIndex(null);
+  const openGallery = useCallback((index: number) => setCurrentIndex(index), []);
+  const closeGallery = useCallback(() => setCurrentIndex(null), []);
 
-  const prevImage = () => {
+  const prevImage = useCallback(() => {
     setDirection(-1);
     setCurrentIndex((prev) => (prev! - 1 + images.length) % images.length);
-  };
+  }, [images.length]);
 
-  const nextImage = () => {
+  const nextImage = useCallback(() => {
     setDirection(1);
     setCurrentIndex((prev) => (prev! + 1) % images.length);
-  };
+  }, [images.length]);
 
   useEffect(() => {
     const handleKeyDown = (event) => {

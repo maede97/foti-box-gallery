@@ -1,8 +1,8 @@
 import { connectToDatabase } from '@/lib/mongodb';
 import Event from '@/models/event';
 import React from 'react';
-import { ErrorPage } from '../pages/error';
-import ImageUploadClient from '../pages/upload-page-client';
+import { ErrorPage } from '../../pages/error';
+import ImageUploadClient from '../../pages/upload-page-client';
 
 export const generateMetadata = async () => {
   return {

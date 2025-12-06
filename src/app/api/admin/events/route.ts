@@ -26,9 +26,6 @@ export async function DELETE(req: NextRequest) {
 
   const { eventID } = await req.json();
 
-  // check if event is active
-  const event = await Event.findById(eventID);
-
   const images = await Image.find({ event: eventID });
 
   await Promise.all(
