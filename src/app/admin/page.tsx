@@ -16,7 +16,7 @@ interface ImageType {
 
 function Modal({ title, onClose, children }) {
   return (
-    <div className="bg-primary/50 fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="bg-primary/80 fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="bg-secondary text-primary relative w-full max-w-lg rounded-2xl p-6 shadow-xl">
         <h2 className="mb-4 text-xl font-bold">{title}</h2>
         {children}
