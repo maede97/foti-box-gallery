@@ -56,13 +56,15 @@ export default function AdminPage() {
   const [showAddEvent, setShowAddEvent] = useState(false);
   const [showAddBox, setShowAddBox] = useState(false);
 
-  function fetchEvents() {
+  async function fetchEvents() {
     if (!token) return;
-    fetch('/api/admin/events', {
+    const res = await fetch('/api/admin/events', {
       headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((data) => data.json())
-      .then((json) => setEvents(json));
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setEvents(data);
+    }
   }
 
   async function switchActiveEvent(eventId: string) {
@@ -167,20 +169,22 @@ export default function AdminPage() {
       }
       const data = await res.json();
       setImages(data);
+      setLoading(false);
     } catch (err) {
       setError(err || 'Bilder konnten nicht geladen werden.');
-    } finally {
       setLoading(false);
     }
   }
 
-  function fetchBoxes() {
+  async function fetchBoxes() {
     if (!token) return;
-    fetch('/api/admin/box', {
+    const res = await fetch('/api/admin/box', {
       headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((data) => data.json())
-      .then((json) => setBoxes(json));
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setBoxes(data);
+    }
   }
 
   async function handleAddBox() {
