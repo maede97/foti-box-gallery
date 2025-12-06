@@ -25,14 +25,14 @@ export async function DELETE(req: NextRequest) {
   await connectToDatabase();
 
   const authCheck = requireAdmin(req);
-  if (!authCheck) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!authCheck) return NextResponse.json({ error: 'Nicht autorisiert' }, { status: 401 });
 
   const { uuid } = await req.json();
-  if (!uuid) return NextResponse.json({ error: 'Missing uuid' }, { status: 400 });
+  if (!uuid) return NextResponse.json({ error: 'Fehlende UUID' }, { status: 400 });
 
   await deleteImage(uuid);
 
-  return NextResponse.json({ message: 'Image deleted' });
+  return NextResponse.json({ message: 'Bild gelöscht' });
 }
 
 export const dynamic = 'force-dynamic';

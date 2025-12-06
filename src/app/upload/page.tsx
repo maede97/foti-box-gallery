@@ -1,8 +1,8 @@
+import { connectToDatabase } from '@/lib/mongodb';
 import Event from '@/models/event';
 import React from 'react';
 import { ErrorPage } from '../pages/error';
 import ImageUploadClient from '../pages/upload-page-client';
-import { connectToDatabase } from '@/lib/mongodb';
 
 export const generateMetadata = async () => {
   return {
@@ -13,7 +13,7 @@ export const generateMetadata = async () => {
 
 const ImageUpload: React.FC = async () => {
   await connectToDatabase();
-  
+
   const event = await Event.findOne({ allow_user_uploads: true, active: true });
 
   if (!event) {

@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   await connectToDatabase();
 
   const authCheck = requireAdmin(req);
-  if (!authCheck) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!authCheck) return NextResponse.json({ error: 'Nicht autorisiert' }, { status: 401 });
 
   const events = await Event.find({}).sort({ createdAt: -1 });
   return NextResponse.json(events);
@@ -22,7 +22,7 @@ export async function DELETE(req: NextRequest) {
   await connectToDatabase();
 
   const authCheck = requireAdmin(req);
-  if (!authCheck) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!authCheck) return NextResponse.json({ error: 'Nicht autorisiert' }, { status: 401 });
 
   const { eventID } = await req.json();
 
@@ -36,7 +36,7 @@ export async function DELETE(req: NextRequest) {
       try {
         await deleteImage(img.uuid);
       } catch (err) {
-        console.error(`Failed to delete image ${img.uuid}:`, err);
+        console.error(`Bild konnte nicht gelöscht werden ${img.uuid}:`, err);
       }
     }),
   );
@@ -55,16 +55,16 @@ export async function POST(req: NextRequest) {
   await connectToDatabase();
 
   const authCheck = requireAdmin(req);
-  if (!authCheck) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!authCheck) return NextResponse.json({ error: 'Nicht autorisiert' }, { status: 401 });
 
   const { name, slug, password } = await req.json();
   if (!name || !password || !slug)
-    return NextResponse.json({ error: 'Missing name, slug or password' }, { status: 400 });
+    return NextResponse.json({ error: 'Fehlender Name, Slug oder Passwort' }, { status: 400 });
 
   const event = new Event({ name, slug, password, allow_user_uploads: false, active: false });
   await event.save();
 
-  return NextResponse.json({ message: 'Event created', event });
+  return NextResponse.json({ message: 'Event erstellt', event });
 }
 
 export const dynamic = 'force-dynamic';

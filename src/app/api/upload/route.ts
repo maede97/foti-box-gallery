@@ -44,7 +44,7 @@ export async function PUT(req: Request) {
 
   const event = await Event.findOne({ active: true });
   if (!event) {
-    return NextResponse.json({ error: 'No active event found' }, { status: 400 });
+    return NextResponse.json({ error: 'Kein aktiver Event gefunden' }, { status: 400 });
   }
 
   // check if event allows user uploads
@@ -68,13 +68,13 @@ export async function POST(req: Request) {
 
   const apiKey = req.headers.get('x-api-key');
   if (!apiKey) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: 'Nicht autorisiert' }, { status: 401 });
   }
 
   // check if api key is valid by selecting a box from the DB
   const box = await Box.findOne({ accessToken: apiKey, active: true });
   if (!box) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: 'Nicht autorisiert' }, { status: 401 });
   }
 
   // update lastUpload timestamp
@@ -85,13 +85,13 @@ export async function POST(req: Request) {
   const file = formData.get('file') as File;
 
   if (!file) {
-    return NextResponse.json({ error: 'Missing file' }, { status: 400 });
+    return NextResponse.json({ error: 'Fehlende Datei' }, { status: 400 });
   }
 
   // Get active event
   const event = await Event.findOne({ active: true });
   if (!event) {
-    return NextResponse.json({ error: 'No active event found' }, { status: 400 });
+    return NextResponse.json({ error: 'Kein aktiver Event gefunden' }, { status: 400 });
   }
 
   const fileUuid = await uploadFile(file, event._id);

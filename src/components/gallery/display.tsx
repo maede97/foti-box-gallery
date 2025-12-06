@@ -87,7 +87,7 @@ const GalleryDisplay: React.FC<{ images: string[]; title: string }> = ({ images,
             </button>
 
             <div
-              className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+              className="bg-primary/80 fixed inset-0 z-50 flex items-center justify-center bg-black/50"
               onClick={closeGallery}
             >
               <motion.div

@@ -1,6 +1,5 @@
 'use client';
 
-import { H1 } from '@/components/ui/headings';
 import { IBox } from '@/models/box';
 import { IEvent } from '@/models/event';
 import { motion } from 'framer-motion';
@@ -13,6 +12,25 @@ interface ImageType {
   url: string;
   event: string;
   createdAt: string;
+}
+
+function Modal({ title, onClose, children }) {
+  return (
+    <div className="bg-primary/50 fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="bg-secondary text-primary relative w-full max-w-lg rounded-2xl p-6 shadow-xl">
+        <h2 className="mb-4 text-xl font-bold">{title}</h2>
+        {children}
+        <div className="mt-6 text-right">
+          <button
+            onClick={onClose}
+            className="bg-error hover:bg-error-dark text-secondary cursor-pointer rounded-xl px-4 py-2 font-semibold shadow-lg transition"
+          >
+            Schliessen
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function AdminPage() {
@@ -35,6 +53,9 @@ export default function AdminPage() {
   const [events, setEvents] = useState<IEvent[]>([]);
   const [boxes, setBoxes] = useState<IBox[]>([]);
 
+  const [showAddEvent, setShowAddEvent] = useState(false);
+  const [showAddBox, setShowAddBox] = useState(false);
+
   async function fetchEvents() {
     if (!token) return;
     const res = await fetch('/api/admin/events', {
@@ -43,17 +64,6 @@ export default function AdminPage() {
     if (res.ok) {
       const data = await res.json();
       setEvents(data);
-    }
-  }
-
-  async function fetchBoxes() {
-    if (!token) return;
-    const res = await fetch('/api/admin/box', {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setBoxes(data);
     }
   }
 
@@ -70,25 +80,55 @@ export default function AdminPage() {
     if (res.ok) fetchEvents();
   }
 
-  useEffect(() => {
-    const savedToken = localStorage.getItem('adminToken');
-    if (savedToken) {
-      setToken(savedToken);
-      setLoggedIn(true);
-    }
-  }, []);
+  async function handleAddEvent() {
+    if (!eventName || !eventPassword || !eventSlug)
+      return setError('Name, Slug und Passwort angeben.');
 
-  useEffect(() => {
-    if (loggedIn && token) {
-      fetchEvents();
-      fetchImages();
-      fetchBoxes();
-    }
-  }, [loggedIn, token]);
+    const res = await fetch('/api/admin/events', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ name: eventName, slug: eventSlug, password: eventPassword }),
+    });
 
+    if (!res.ok) {
+      const data = await res.json();
+      setError(data.error || 'Event kann nicht hinzugefügt werden.');
+      return;
+    }
+
+    setEventName('');
+    setEventSlug('');
+    setEventPassword('');
+    fetchEvents();
+    setShowAddEvent(false);
+  }
+
+  async function handleDeleteEvent(eventID: string) {
+    if (!confirm('Bist du sicher, dass du diesen Event löschen willst?')) return;
+
+    const res = await fetch('/api/admin/events', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ eventID }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      setError(data.error || 'Der Event konnte nicht gelöscht werden.');
+      return;
+    }
+    setImages(images.filter((img) => img.event !== eventID));
+    setEvents(events.filter((event) => event._id !== eventID));
+  }
   async function handleLogin() {
     setError('');
-    if (!adminUsername || !adminPassword) return setError('Enter username and password');
+    if (!adminUsername || !adminPassword) return setError('Gib Benutzername und Passwort ein.');
 
     const res = await fetch('/api/admin/login', {
       method: 'POST',
@@ -98,7 +138,7 @@ export default function AdminPage() {
 
     if (!res.ok) {
       const data = await res.json();
-      setError(data.error || 'Login failed');
+      setError(data.error || 'Login fehlgeschlagen');
       return;
     }
 
@@ -123,46 +163,32 @@ export default function AdminPage() {
       });
       if (!res.ok) {
         const data = await res.json();
-        setError(data.error || 'Failed to fetch images');
+        setError(data.error || 'Bilder konnten nicht geladen werden.');
         setLoading(false);
         return;
       }
       const data = await res.json();
       setImages(data);
     } catch (err) {
-      setError(err || 'Error fetching images');
+      setError(err || 'Bilder konnten nicht geladen werden.');
     } finally {
       setLoading(false);
     }
   }
 
-  async function handleAddEvent() {
-    if (!eventName || !eventPassword || !eventSlug)
-      return setError('Provide name, slug and password');
-
-    const res = await fetch('/api/admin/events', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ name: eventName, slug: eventSlug, password: eventPassword }),
+  async function fetchBoxes() {
+    if (!token) return;
+    const res = await fetch('/api/admin/box', {
+      headers: { Authorization: `Bearer ${token}` },
     });
-
-    if (!res.ok) {
+    if (res.ok) {
       const data = await res.json();
-      setError(data.error || 'Failed to add event');
-      return;
+      setBoxes(data);
     }
-
-    setEventName('');
-    setEventSlug('');
-    setEventPassword('');
-    fetchEvents();
   }
 
   async function handleAddBox() {
-    if (!boxLabel || !boxAccessToken) return setError('Provide label and access token');
+    if (!boxLabel || !boxAccessToken) return setError('Gib Label und Token ein');
 
     const res = await fetch('/api/admin/box', {
       method: 'POST',
@@ -175,17 +201,18 @@ export default function AdminPage() {
 
     if (!res.ok) {
       const data = await res.json();
-      setError(data.error || 'Failed to add box');
+      setError(data.error || 'Box konnte nicht hinzugefügt werden');
       return;
     }
 
     setBoxLabel('');
     setBoxAccessToken('');
     fetchBoxes();
+    setShowAddBox(false);
   }
 
   async function handleDeleteBox(boxID: string) {
-    if (!confirm('Are you sure you want to delete this box?')) return;
+    if (!confirm('Bist du sicher, dass du diese Box löschen willst?')) return;
 
     const res = await fetch('/api/admin/box', {
       method: 'DELETE',
@@ -198,7 +225,7 @@ export default function AdminPage() {
 
     if (!res.ok) {
       const data = await res.json();
-      setError(data.error || 'Failed to delete box');
+      setError(data.error || 'Box konnte nicht gelöscht werden.');
       return;
     }
     setBoxes(boxes.filter((box) => box._id !== boxID));
@@ -216,31 +243,10 @@ export default function AdminPage() {
 
     if (!res.ok) {
       const data = await res.json();
-      setError(data.error || 'Failed to update box');
+      setError(data.error || 'Box konnte nicht (in)aktiv gesetzt werden.');
       return;
     }
     fetchBoxes();
-  }
-
-  async function handleDeleteEvent(eventID: string) {
-    if (!confirm('Are you sure you want to delete this event?')) return;
-
-    const res = await fetch('/api/admin/events', {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ eventID }),
-    });
-
-    if (!res.ok) {
-      const data = await res.json();
-      setError(data.error || 'Failed to delete event');
-      return;
-    }
-    setImages(images.filter((img) => img.event !== eventID));
-    setEvents(events.filter((event) => event._id !== eventID));
   }
 
   async function handleSetAllowUserUpload(eventId: string, allow_user_uploads: boolean) {
@@ -254,14 +260,14 @@ export default function AdminPage() {
     });
     if (!res.ok) {
       const data = await res.json();
-      setError(data.error || 'Failed to update event');
+      setError(data.error || 'Event konnte nicht verändert werden.');
       return;
     }
     fetchEvents();
   }
 
   async function handleDeleteImage(uuid: string) {
-    if (!confirm('Are you sure you want to delete this image?')) return;
+    if (!confirm('Bist du sicher, dass du dieses Bild löschen willst?')) return;
 
     const res = await fetch('/api/admin/delete-image', {
       method: 'DELETE',
@@ -274,12 +280,28 @@ export default function AdminPage() {
 
     if (!res.ok) {
       const data = await res.json();
-      setError(data.error || 'Failed to delete image');
+      setError(data.error || 'Bild konnte nicht gelöscht werden.');
       return;
     }
 
     setImages(images.filter((img) => img.uuid !== uuid));
   }
+
+  useEffect(() => {
+    const savedToken = localStorage.getItem('adminToken');
+    if (savedToken) {
+      setToken(savedToken);
+      setLoggedIn(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (loggedIn && token) {
+      fetchEvents();
+      fetchImages();
+      fetchBoxes();
+    }
+  }, [loggedIn, token]);
 
   if (!loggedIn) {
     return (
@@ -297,14 +319,14 @@ export default function AdminPage() {
           <div className="space-y-3">
             <input
               type="text"
-              placeholder="Username"
+              placeholder="Benutzername"
               value={adminUsername}
               onChange={(e) => setAdminUsername(e.target.value)}
               className="bg-primary text-secondary w-full p-2 text-sm focus:outline-none"
             />
             <input
               type="password"
-              placeholder="Password"
+              placeholder="Passwort"
               value={adminPassword}
               onChange={(e) => setAdminPassword(e.target.value)}
               onKeyDown={(e) => {
@@ -329,7 +351,9 @@ export default function AdminPage() {
   return (
     <div className="p-6">
       <div className="mb-6 flex items-center justify-between">
-        <H1>Admin Dashboard</H1>
+        <h1 className="font-heading mt-6 mb-4 max-w-4xl pt-8 text-3xl font-extrabold text-balance hyphens-auto">
+          Admin Dashboard
+        </h1>
         <button
           onClick={handleLogout}
           className="bg-error hover:bg-error-dark cursor-pointer rounded-xl px-4 py-2 font-semibold shadow-lg transition"
@@ -338,167 +362,141 @@ export default function AdminPage() {
         </button>
       </div>
 
-      {/* Manage Events */}
-      <section className="mb-8">
-        <h2 className="mb-4 text-2xl font-semibold">Manage Events</h2>
-        <div className="space-y-2">
-          {events.map((evt) => (
-            <div
-              key={evt._id}
-              className="text-primary bg-secondary border-accent flex items-center justify-between rounded-xl border p-3"
-            >
-              <span className={evt.active ? 'font-bold' : ''}>{evt.name}</span>
-              <span className={'text-primary/70 text-sm'}>Slug: {evt.slug}</span>
-              <span className="text-primary/70 text-sm">(Password: {evt.password})</span>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => handleSetAllowUserUpload(evt._id, !evt.allow_user_uploads)}
-                  className={`cursor-pointer rounded-xl px-3 py-1 font-semibold transition ${evt.allow_user_uploads ? 'bg-success hover:bg-success-dark' : 'bg-error hover:bg-error-dark'}`}
-                >
-                  Allows User Uploads
-                </button>
-                <button
-                  onClick={() => handleDeleteEvent(evt._id)}
-                  className="hover:bg-error-dark bg-error cursor-pointer rounded-xl px-3 py-1 font-semibold transition"
-                >
-                  Delete
-                </button>
-                {!evt.active ? (
-                  <button
-                    onClick={() => switchActiveEvent(evt._id)}
-                    className="bg-primary text-secondary hover:bg-accent-dark cursor-pointer rounded-xl px-3 py-1 font-semibold transition"
-                  >
-                    Set Active
-                  </button>
-                ) : (
-                  <span className="text-success font-semibold">Active</span>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Add Event */}
-      <section className="mb-8">
-        <h2 className="mb-4 text-2xl font-semibold">Create New Event</h2>
-        <div className="flex flex-wrap items-center gap-3">
-          <input
-            type="text"
-            placeholder="Event Name"
-            value={eventName}
-            onChange={(e) => setEventName(e.target.value)}
-            className="text-primary bg-secondary rounded-xl p-3 focus:outline-none"
-          />
-          <input
-            type="text"
-            placeholder="event-slug"
-            value={eventSlug}
-            onChange={(e) => setEventSlug(e.target.value)}
-            className="text-primary bg-secondary rounded-xl p-3 focus:outline-none"
-          />
-          <input
-            type="text"
-            placeholder="Password"
-            value={eventPassword}
-            onChange={(e) => setEventPassword(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                handleAddEvent();
-              }
-            }}
-            className="text-primary bg-secondary rounded-xl p-3 focus:outline-none"
-          />
+      {/* Events Table */}
+      <section className="mb-10">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-2xl font-semibold">Events</h2>
           <button
-            onClick={handleAddEvent}
-            className="text-primary bg-secondary hover:bg-accent cursor-pointer rounded-xl px-4 py-2 font-semibold shadow-lg transition"
+            onClick={() => {
+              setError('');
+              setShowAddEvent(true);
+            }}
+            className="bg-secondary text-primary hover:bg-accent-dark cursor-pointer rounded-xl px-4 py-2 font-semibold shadow-lg transition"
           >
-            Add Event
+            + Event hinzufügen
           </button>
         </div>
-        {error && <p className="text-error mt-2">{error}</p>}
+
+        <table className="bg-secondary w-full overflow-hidden text-left shadow-lg">
+          <thead>
+            <tr className="bg-primary/80 text-secondary">
+              <th className="p-3">Name</th>
+              <th className="p-3">Slug</th>
+              <th className="p-3">Passwort</th>
+              <th className="p-3">Gäste können hochladen</th>
+              <th className="p-3">Event aktiv</th>
+              <th className="p-3">Aktionen</th>
+            </tr>
+          </thead>
+          <tbody>
+            {events.map((evt) => (
+              <tr key={evt._id} className="border-accent text-primary border-b">
+                <td className="p-3 font-semibold">{evt.name}</td>
+                <td className="text-primary/70 p-3">{evt.slug}</td>
+                <td className="text-primary/70 p-3">{evt.password}</td>
+                <td className="p-3">
+                  <button
+                    onClick={() => handleSetAllowUserUpload(evt._id, !evt.allow_user_uploads)}
+                    className={`cursor-pointer rounded-xl px-3 py-1 font-semibold transition ${evt.allow_user_uploads ? 'bg-success hover:bg-success-dark' : 'bg-error hover:bg-error-dark'}`}
+                  >
+                    {evt.allow_user_uploads ? 'Yes' : 'No'}
+                  </button>
+                </td>
+                <td className="p-3">
+                  {evt.active ? (
+                    <span className="text-success font-semibold">Aktiv</span>
+                  ) : (
+                    <button
+                      onClick={() => switchActiveEvent(evt._id)}
+                      className="bg-primary text-secondary hover:bg-accent-dark cursor-pointer rounded-xl px-3 py-1 font-semibold transition"
+                    >
+                      Setze Aktiv
+                    </button>
+                  )}
+                </td>
+                <td className="p-3 text-right">
+                  <button
+                    onClick={() => handleDeleteEvent(evt._id)}
+                    className="bg-error hover:bg-error-dark cursor-pointer rounded-xl px-3 py-1 font-semibold transition"
+                  >
+                    Löschen
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </section>
 
-      {/* boxes */}
-      <section>
-        <h2 className="mb-4 text-2xl font-semibold">Boxes</h2>
-        <div className="space-y-2">
-          {boxes.map((box) => (
-            <div
-              key={box._id}
-              className="text-primary bg-secondary border-accent flex items-center justify-between rounded-xl border p-3"
-            >
-              <span className={box.active ? 'font-bold' : ''}>
-                {box.label} - Last Upload: {/* format: dd.mm.yyyy hh:mm, do NOT use browser */}
-                {box.lastUpload ? new Date(box.lastUpload).toLocaleString('de-CH') : 'Never'}
-              </span>
-              <span className="text-primary/70 text-sm">(Access Token: {box.accessToken})</span>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => handleDeleteBox(box._id)}
-                  className="hover:bg-error-dark bg-error cursor-pointer rounded-xl px-3 py-1 font-semibold transition"
-                >
-                  Delete
-                </button>
-                {box.active ? (
-                  <button
-                    onClick={() => handleBoxActive(box._id, false)}
-                    className="bg-primary text-secondary hover:bg-accent-dark cursor-pointer rounded-xl px-3 py-1 font-semibold transition"
-                  >
-                    Deactivate
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => handleBoxActive(box._id, true)}
-                    className="bg-primary text-secondary hover:bg-accent-dark cursor-pointer rounded-xl px-3 py-1 font-semibold transition"
-                  >
-                    Activate
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-      {/* new box */}
-      <section className="my-8">
-        <h2 className="mb-4 text-2xl font-semibold">Add New Box</h2>
-        <div className="flex flex-wrap items-center gap-3">
-          <input
-            type="text"
-            placeholder="Box Label"
-            value={boxLabel}
-            onChange={(e) => setBoxLabel(e.target.value)}
-            className="text-primary bg-secondary rounded-xl p-3 focus:outline-none"
-          />
-          <input
-            type="text"
-            placeholder="Access Token"
-            value={boxAccessToken}
-            onChange={(e) => setBoxAccessToken(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                handleAddBox();
-              }
-            }}
-            className="text-primary bg-secondary rounded-xl p-3 focus:outline-none"
-          />
+      {/* Boxes Table */}
+      <section className="mb-10">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-2xl font-semibold">Boxen</h2>
           <button
-            onClick={handleAddBox}
-            className="text-primary bg-secondary hover:bg-accent cursor-pointer rounded-xl px-4 py-2 font-semibold shadow-lg transition"
+            onClick={() => {
+              setError('');
+              setShowAddBox(true);
+            }}
+            className="bg-secondary text-primary hover:bg-accent-dark cursor-pointer rounded-xl px-4 py-2 font-semibold shadow-lg transition"
           >
-            Add Box
+            + Box hinzufügen
           </button>
         </div>
+
+        <table className="bg-secondary w-full overflow-hidden text-left shadow-lg">
+          <thead>
+            <tr className="bg-primary/80 text-secondary">
+              <th className="p-3">Label</th>
+              <th className="p-3">Letzer Upload</th>
+              <th className="p-3">Zugangstoken</th>
+              <th className="p-3">Status</th>
+              <th className="p-3">Aktionen</th>
+            </tr>
+          </thead>
+          <tbody>
+            {boxes.map((box) => (
+              <tr key={box._id} className="border-accent text-primary border-b">
+                <td className="p-3 font-semibold">{box.label}</td>
+                <td className="text-primary/70 p-3">
+                  {box.lastUpload ? new Date(box.lastUpload).toLocaleString('de-CH') : 'Never'}
+                </td>
+                <td className="text-primary/70 p-3">{box.accessToken}</td>
+                <td className="p-3">
+                  {box.active ? (
+                    <button
+                      onClick={() => handleBoxActive(box._id, false)}
+                      className="bg-primary text-secondary hover:bg-accent-dark cursor-pointer rounded-xl px-3 py-1 font-semibold transition"
+                    >
+                      Deaktivieren
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleBoxActive(box._id, true)}
+                      className="bg-primary text-secondary hover:bg-accent-dark cursor-pointer rounded-xl px-3 py-1 font-semibold transition"
+                    >
+                      Aktivieren
+                    </button>
+                  )}
+                </td>
+                <td className="p-3 text-right">
+                  <button
+                    onClick={() => handleDeleteBox(box._id)}
+                    className="bg-error hover:bg-error-dark cursor-pointer rounded-xl px-3 py-1 font-semibold transition"
+                  >
+                    Löschen
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </section>
 
-      {/* Images */}
+      {/* Images Grid */}
       <section>
-        <h2 className="mb-4 text-2xl font-semibold">All Images</h2>
+        <h2 className="mb-4 text-2xl font-semibold">Alle Bilder</h2>
         {loading ? (
-          <p>Loading images...</p>
-        ) : error ? (
-          <p className="text-error">{error}</p>
+          <p>Lade Bilder...</p>
         ) : (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
             {images.map((img) => (
@@ -518,7 +516,7 @@ export default function AdminPage() {
                 </Link>
                 <button
                   onClick={() => handleDeleteImage(img.uuid)}
-                  className="text-primary bg-error hover:bg-error-dark absolute top-4 right-4 z-100 flex h-5 w-5 cursor-pointer items-center justify-center rounded-full transition"
+                  className="text-primary bg-error hover:bg-error-dark absolute top-4 right-4 z-50 flex h-5 w-5 cursor-pointer items-center justify-center rounded-full transition"
                 >
                   X
                 </button>
@@ -527,6 +525,75 @@ export default function AdminPage() {
           </div>
         )}
       </section>
+
+      {showAddEvent && (
+        <Modal title="Event hinzufügen" onClose={() => setShowAddEvent(false)}>
+          <div className="flex flex-col gap-4">
+            <input
+              type="text"
+              placeholder="Event Name"
+              value={eventName}
+              onChange={(e) => setEventName(e.target.value)}
+              className="text-secondary bg-primary rounded-xl p-3 focus:outline-none"
+            />
+            <input
+              type="text"
+              placeholder="Event Slug"
+              value={eventSlug}
+              onChange={(e) => setEventSlug(e.target.value)}
+              className="text-secondary bg-primary rounded-xl p-3 focus:outline-none"
+            />
+            <input
+              type="text"
+              placeholder="Passwort"
+              value={eventPassword}
+              onChange={(e) => setEventPassword(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleAddEvent();
+              }}
+              className="text-secondary bg-primary rounded-xl p-3 focus:outline-none"
+            />
+            {error && <p className="text-error">{error}</p>}
+            <button
+              onClick={handleAddEvent}
+              className="bg-primary text-secondary hover:bg-accent-dark cursor-pointer rounded-xl px-4 py-2 font-semibold shadow-lg transition"
+            >
+              Event hinzufügen
+            </button>
+          </div>
+        </Modal>
+      )}
+
+      {showAddBox && (
+        <Modal title="Box hinzufügen" onClose={() => setShowAddBox(false)}>
+          <div className="flex flex-col gap-4">
+            <input
+              type="text"
+              placeholder="Box Label"
+              value={boxLabel}
+              onChange={(e) => setBoxLabel(e.target.value)}
+              className="text-secondary bg-primary rounded-xl p-3 focus:outline-none"
+            />
+            <input
+              type="text"
+              placeholder="Zugangstoken"
+              value={boxAccessToken}
+              onChange={(e) => setBoxAccessToken(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleAddBox();
+              }}
+              className="text-secondary bg-primary rounded-xl p-3 focus:outline-none"
+            />
+            {error && <p className="text-error">{error}</p>}
+            <button
+              onClick={handleAddBox}
+              className="bg-primary text-secondary hover:bg-accent-dark cursor-pointer rounded-xl px-4 py-2 font-semibold shadow-lg transition"
+            >
+              Box hinzufügen
+            </button>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
   await connectToDatabase();
 
   const authCheck = requireAdmin(req);
-  if (!authCheck) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!authCheck) return NextResponse.json({ error: 'Nicht autorisiert' }, { status: 401 });
 
   const images = await Image.find({}).sort({ createdAt: -1 });
   return NextResponse.json(images);

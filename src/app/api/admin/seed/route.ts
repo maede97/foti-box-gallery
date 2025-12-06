@@ -10,7 +10,7 @@ export async function GET() {
 
   const exists = await Admin.findOne({ username });
   if (exists) {
-    console.log(`Admin "${username}" already exists`);
+    console.log(`Admin "${username}" existiert bereits`);
     return NextResponse.json({ message: 'ok' });
   }
 

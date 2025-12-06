@@ -7,20 +7,20 @@ export async function POST(req: NextRequest) {
   await connectToDatabase();
 
   const authCheck = requireAdmin(req);
-  if (!authCheck) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!authCheck) return NextResponse.json({ error: 'Nicht autorisiert' }, { status: 401 });
 
   const { eventId, allow_user_uploads } = await req.json();
-  if (!eventId) return NextResponse.json({ error: 'Missing eventId' }, { status: 400 });
+  if (!eventId) return NextResponse.json({ error: 'Fehlende Event ID' }, { status: 400 });
 
   const event = await Event.findByIdAndUpdate(
     eventId,
     { allow_user_uploads: allow_user_uploads },
     { new: true },
   );
-  if (!event) return NextResponse.json({ error: 'Event not found' }, { status: 404 });
+  if (!event) return NextResponse.json({ error: 'Event nicht gefunden' }, { status: 404 });
 
   return NextResponse.json({
-    message: `Event "${event.name}" does now ${allow_user_uploads ? '' : 'not '}allow uploads`,
+    message: `Der Event "${event.name}" erlaubt nun ${allow_user_uploads ? '' : 'keine '}Uploads`,
     event,
   });
 }
