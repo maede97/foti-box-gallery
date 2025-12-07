@@ -17,7 +17,7 @@ const EventPageClient: React.FC<{
     if (doesNotRequirePassword) {
       void fetchGallery(eventSlug, '', setError, setImages, setLoggedIn);
     }
-  }, []);
+  }, [doesNotRequirePassword, eventSlug]);
 
   return (
     <div className="m-6">
