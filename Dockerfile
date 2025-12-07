@@ -21,6 +21,9 @@ ENV BUILD_TARGET=production
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
+ARG APP_HOST_URL
+ENV APP_HOST_URL=${APP_HOST_URL}
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
