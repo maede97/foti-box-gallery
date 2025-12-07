@@ -465,7 +465,7 @@ export default function AdminPage() {
           </button>
         </div>
 
-        <table className="bg-secondary w-full overflow-hidden text-left shadow-lg">
+        <table className="bg-secondary w-full table-fixed overflow-hidden text-left shadow-lg">
           <thead>
             <tr className="bg-primary/80 text-secondary">
               <th className="p-3">Name</th>
