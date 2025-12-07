@@ -55,6 +55,10 @@ export default function AdminPage() {
 
   const [showAddEvent, setShowAddEvent] = useState(false);
   const [showAddBox, setShowAddBox] = useState(false);
+  const [showAddLogo, setShowAddLogo] = useState('');
+
+  const [selectedLogo, setSelectedLogo] = useState<File | undefined>(undefined);
+  const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | undefined>(undefined);
 
   async function fetchEvents() {
     if (!token) return;
@@ -278,6 +282,77 @@ export default function AdminPage() {
     fetchEvents();
   }
 
+  async function handleAddLogo() {
+    const eventId = showAddLogo; // grab eventid from setState
+
+    if (!selectedLogo) {
+      setError('Bitte zuerst eine Datei auswählen.');
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append('file', selectedLogo);
+      formData.append('eventId', eventId);
+      const res = await fetch('/api/admin/logo', {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+
+        body: formData,
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw Error(data.error || 'Upload fehlgeschlagen.');
+      }
+
+      setError('');
+      setSelectedLogo(undefined);
+      setLogoPreviewUrl(undefined);
+
+      setShowAddLogo('');
+      await fetchEvents();
+    } catch (err) {
+      setError(err.message || 'Ein Fehler ist aufgetreten.');
+    }
+  }
+
+  async function handleDeleteLogo(eventId: string) {
+    if (!confirm('Bist du sicher, dass du dieses Logo löschen willst?')) return;
+
+    const res = await fetch(`/api/admin/logo`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ eventId }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      setError(data.error || 'Logo konnte nicht gelöscht werden.');
+      return;
+    }
+
+    await fetchEvents();
+  }
+
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setError('Bitte eine gültige Bilddatei auswählen.');
+      setSelectedLogo(undefined);
+      setLogoPreviewUrl(undefined);
+      return;
+    }
+    setSelectedLogo(file);
+    setLogoPreviewUrl(URL.createObjectURL(file));
+    setError('');
+  };
+
   async function handleDeleteImage(uuid: string) {
     if (!confirm('Bist du sicher, dass du dieses Bild löschen willst?')) return;
 
@@ -397,6 +472,7 @@ export default function AdminPage() {
               <th className="p-3">Slug</th>
               <th className="p-3">Passwort</th>
               <th className="p-3">Gäste können hochladen</th>
+              <th className="p-3">Logo</th>
               <th className="p-3">Event aktiv</th>
               <th className="p-3">Aktionen</th>
             </tr>
@@ -414,6 +490,37 @@ export default function AdminPage() {
                   >
                     {evt.allow_user_uploads ? 'Ja' : 'Nein'}
                   </button>
+                </td>
+                <td className="p-3">
+                  {evt.logo ? (
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      className="relative overflow-hidden rounded-xl shadow-lg"
+                    >
+                      <Image
+                        alt={evt.logo}
+                        width={100}
+                        height={66}
+                        src={`/api/admin/logo?logo=${evt.logo}&eventId=${evt._id}`}
+                      />
+                      <button
+                        onClick={() => handleDeleteLogo(evt._id)}
+                        className="text-primary bg-error hover:bg-error-dark absolute top-4 right-4 z-50 flex h-5 w-5 cursor-pointer items-center justify-center rounded-full transition"
+                      >
+                        X
+                      </button>
+                    </motion.div>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setError('');
+                        setShowAddLogo(evt._id);
+                      }}
+                      className="bg-primary text-secondary hover:bg-accent-dark cursor-pointer rounded-xl px-4 py-2 font-semibold shadow-lg transition"
+                    >
+                      + Logo setzen
+                    </button>
+                  )}
                 </td>
                 <td className="p-3">
                   {evt.active ? (
@@ -603,6 +710,41 @@ export default function AdminPage() {
               className="bg-primary text-secondary hover:bg-accent-dark cursor-pointer rounded-xl px-4 py-2 font-semibold shadow-lg transition"
             >
               Box hinzufügen
+            </button>
+          </div>
+        </Modal>
+      )}
+
+      {showAddLogo && (
+        <Modal title="Logo setzen" onClose={() => setShowAddLogo('')}>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1">
+              <label className="text-primary text-xs tracking-wide uppercase">Bild auswählen</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleLogoChange}
+                className="bg-primary text-secondary w-full border p-2 text-sm focus:outline-none"
+              />
+
+              {logoPreviewUrl && (
+                <div className="mt-2">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={logoPreviewUrl}
+                    alt="Vorschau"
+                    width={100}
+                    className="border-accent max-h-60 w-full rounded border object-contain"
+                  />
+                </div>
+              )}
+            </div>
+            {error && <p className="text-error">{error}</p>}
+            <button
+              onClick={handleAddLogo}
+              className="bg-primary text-secondary hover:bg-accent-dark cursor-pointer rounded-xl px-4 py-2 font-semibold shadow-lg transition"
+            >
+              Logo setzen
             </button>
           </div>
         </Modal>

@@ -6,6 +6,7 @@ export interface IEvent extends Document {
   password: string;
   active: boolean;
   allow_user_uploads: boolean;
+  logo: string | undefined;
 }
 
 const EventSchema = new Schema<IEvent>({
@@ -14,6 +15,7 @@ const EventSchema = new Schema<IEvent>({
   password: { type: String, required: true },
   active: { type: Boolean, default: false },
   allow_user_uploads: { type: Boolean, default: false },
+  logo: { type: String, required: false },
 });
 
 export default mongoose.models.Event || mongoose.model<IEvent>('Event', EventSchema);

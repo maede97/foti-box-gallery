@@ -3,6 +3,7 @@ import { connectToDatabase } from '@/lib/mongodb';
 import Box from '@/models/box';
 import Event from '@/models/event';
 import Image from '@/models/image';
+import { putLogoOntoBuffer } from '@/utils/image';
 import fs from 'fs/promises';
 import { ObjectId } from 'mongoose';
 import { NextResponse } from 'next/server';
@@ -15,7 +16,6 @@ const uploadFile = async (file: File, eventId: ObjectId) => {
   // Generate a unique filename
   const fileExtension = path.extname(file.name) || '.jpg'; // default to .jpg if missing
   const fileUuid = uuidv4();
-  const fileName = `${fileUuid}${fileExtension}`;
 
   // Create uploads folder for the event
   const uploadDir = path.join(environmentVariables.UPLOAD_FOLDER, eventId.toString());
@@ -24,9 +24,20 @@ const uploadFile = async (file: File, eventId: ObjectId) => {
   // Save file to filesystem
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
-  const filePath = path.join(uploadDir, fileName);
-  await fs.writeFile(filePath, buffer);
 
+  const event = await Event.findById(eventId);
+
+  if (event.logo) {
+    await fs.writeFile(path.join(uploadDir, `${fileUuid}_orig${fileExtension}`), buffer);
+
+    // paste logo onto buffer
+    const bufferLogo = await putLogoOntoBuffer(buffer, eventId);
+
+    await fs.writeFile(path.join(uploadDir, `${fileUuid}${fileExtension}`), bufferLogo);
+  } else {
+    // do not write _orig file
+    await fs.writeFile(path.join(uploadDir, `${fileUuid}${fileExtension}`), buffer);
+  }
   // Save metadata to database
   const image = new Image({
     uuid: fileUuid,

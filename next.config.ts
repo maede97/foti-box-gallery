@@ -12,6 +12,7 @@ const nextConfig: NextConfig = {
       {
         pathname: '/api/gallery',
       },
+      { pathname: '/api/admin/logo' },
     ],
   },
 };

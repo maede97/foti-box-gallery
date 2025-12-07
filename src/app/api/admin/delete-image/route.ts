@@ -15,10 +15,24 @@ export const deleteImage = async (uuid: string) => {
 
   // rename image in uploads folder
   const fileExtension = image.extension;
-  const fileName = `${image.uuid}${fileExtension}`;
-  const filePath = path.join(environmentVariables.UPLOAD_FOLDER, event._id.toString(), fileName);
+  const filePath = path.join(
+    environmentVariables.UPLOAD_FOLDER,
+    event._id.toString(),
+    `${image.uuid}${fileExtension}`,
+  );
 
   await fs.rm(filePath);
+
+  // try to delete _orig file as well
+  try {
+    await fs.rm(
+      path.join(
+        environmentVariables.UPLOAD_FOLDER,
+        event._id.toString(),
+        `${image.uuid}_orig${fileExtension}`,
+      ),
+    );
+  } catch {}
 };
 
 export async function DELETE(req: NextRequest) {
