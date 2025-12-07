@@ -85,3 +85,5 @@ export async function PUT(req: NextRequest) {
     logo: file.name,
   });
 }
+
+export const dynamic = 'force-dynamic';
