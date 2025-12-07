@@ -25,10 +25,10 @@ const ImpressumPage: React.FC = () => {
       <span className="text-sm tracking-wide">Der Quellcode dieser Website ist öffentlich:</span>
       <Link
         className="inline-flex text-sm tracking-wide"
-        href="https://github.com/maede97/foti-box-gallery"
+        href="https://github.com/maede97/foti-box"
         target="_blank"
       >
-        https://github.com/maede97/foti-box-gallery <ExternalLink className="size-4" />
+        https://github.com/maede97/foti-box <ExternalLink className="size-4" />
       </Link>
     </LogoPage>
   );
