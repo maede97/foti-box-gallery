@@ -20,7 +20,7 @@ export const putLogoOntoBuffer = async (buffer: Buffer, eventId: ObjectId) => {
     const logoBuffer = await fs.readFile(logoFile);
 
     // Load main image (buffer)
-    const mainImage = sharp(buffer);
+    const mainImage = sharp(buffer).rotate(); // fix orientation
 
     // Composite logo onto bottom-right
     const resultBuffer = await mainImage
