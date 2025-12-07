@@ -68,19 +68,23 @@ const GalleryDisplay: React.FC<{ images: string[]; title: string }> = ({ images,
               <X />
             </button>
 
-            <button
-              className="text-primary bg-secondary hover:bg-accent absolute left-4 z-100 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-xl"
-              onClick={prevImage}
-            >
-              <ChevronLeft />
-            </button>
+            {images.length > 1 && (
+              <>
+                <button
+                  className="text-primary bg-secondary hover:bg-accent absolute left-4 z-100 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-xl"
+                  onClick={prevImage}
+                >
+                  <ChevronLeft />
+                </button>
 
-            <button
-              className="text-primary bg-secondary hover:bg-accent absolute right-4 z-100 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-xl"
-              onClick={nextImage}
-            >
-              <ChevronRight />
-            </button>
+                <button
+                  className="text-primary bg-secondary hover:bg-accent absolute right-4 z-100 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-xl"
+                  onClick={nextImage}
+                >
+                  <ChevronRight />
+                </button>
+              </>
+            )}
 
             <div
               className="bg-primary/80 fixed inset-0 z-50 flex items-center justify-center bg-black/50"
