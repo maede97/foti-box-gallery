@@ -26,7 +26,7 @@ interface LayoutProperties {
 
 const RootLayout: React.FC<LayoutProperties> = async ({ children }) => {
   return (
-    <html className={`${montserrat.className} ${inter.className}`} lang="en">
+    <html className={`${montserrat.className} ${inter.className}`} lang="de">
       <body className="bg-primary text-secondary">
         <main>{children}</main>
       </body>
