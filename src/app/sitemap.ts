@@ -9,6 +9,11 @@ export default function siteamp(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
+      url: `${environmentVariables.APP_HOST_URL}/impressum`,
+      lastModified: new Date(),
+      priority: 1,
+    },
+    {
       url: `${environmentVariables.APP_HOST_URL}/upload`,
       lastModified: new Date(),
       priority: 0.8,

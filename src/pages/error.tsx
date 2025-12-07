@@ -13,7 +13,7 @@ const ErrorPage: React.FC<{ message: string }> = ({ message }) => {
           alt="Foti Box"
           width={350}
           height={350}
-          className="rounded-2xl shadow-md"
+          className="border-secondary border-r-4 pr-4"
         />
 
         <div className="flex flex-col items-center gap-2 text-center md:items-start md:text-left">
