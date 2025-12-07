@@ -1,4 +1,4 @@
-# foti-box-gallery
+# foti-box
 
 <p align="center">
   <img src="public/foti-box.png" width="350" title="hover text">
