@@ -129,7 +129,7 @@ export default function AdminPage() {
       return;
     }
     setImages(images.filter((img) => (img.event as unknown as ObjectId) !== eventID));
-    setEvents(events.filter((event) => event._id !== eventID));
+    setEvents(events.filter((event) => (event._id as unknown as ObjectId) !== eventID));
   }
   async function handleLogin() {
     setError('');
