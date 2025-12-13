@@ -1,8 +1,8 @@
-import mongoose, { Document, Schema, Types } from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IImage extends Document {
   uuid: string;
-  event: Types.ObjectId; // Reference to Event
+  event: Schema.Types.ObjectId; // Reference to Event
   extension: string;
   createdAt: Date;
 }
