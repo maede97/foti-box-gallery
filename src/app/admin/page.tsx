@@ -5,10 +5,12 @@ import { IEvent } from '@/models/event';
 import { IImage } from '@/models/image';
 import { motion } from 'framer-motion';
 import { ExternalLink, Plus, X } from 'lucide-react';
-import { ObjectId } from 'mongoose';
+import { Schema } from 'mongoose';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+
+type ObjectId = Schema.Types.ObjectId;
 
 function Modal({ title, onClose, children }) {
   return (
@@ -73,7 +75,7 @@ export default function AdminPage() {
     }
   }
 
-  async function switchActiveEvent(eventId: ObjectId) {
+  async function switchActiveEvent(eventId: Schema.Types.ObjectId) {
     if (!token) return;
     const res = await fetch('/api/admin/switch-event', {
       method: 'POST',
