@@ -479,7 +479,7 @@ export default function AdminPage() {
           <tbody>
             {events.map((evt) => (
               <tr
-                key={evt._id}
+                key={evt._id as unknown as string}
                 className="border-accent text-primary bg-secondary mb-4 block rounded-xl border-b p-4 md:mb-0 md:table-row md:rounded-none md:bg-transparent md:p-0"
               >
                 <td className="block p-3 md:table-cell">
@@ -614,7 +614,7 @@ export default function AdminPage() {
           <tbody className="block md:table-row-group">
             {boxes.map((box) => (
               <tr
-                key={box._id}
+                key={box._id as unknown as string}
                 className="border-accent mb-4 block rounded-xl border-b p-4 md:mb-0 md:table-row md:rounded-none md:p-0"
               >
                 <td className="text-primary/70 block p-3 font-semibold md:table-cell">
