@@ -33,7 +33,7 @@
     "@tailwindcss/postcss": "^4.1.18",
     "@types/bcrypt": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^20.19.26",
+    "@types/node": "^25.0.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "19.2.0",
     "@types/uuid": "^9.0.8",
