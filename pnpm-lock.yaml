@@ -67,8 +67,8 @@ importers:
         specifier: 19.2.0
         version: 19.2.0(@types/react@19.2.7)
       '@types/uuid':
-        specifier: ^9.0.8
-        version: 9.0.8
+        specifier: ^11.0.0
+        version: 11.0.0
       babel-plugin-react-compiler:
         specifier: ^1.0.0
         version: 1.0.0
@@ -729,8 +729,9 @@ packages:
   '@types/react@19.2.7':
     resolution: {integrity: sha512-MWtvHrGZLFttgeEj28VXHxpmwYbor/ATPYbBfSFZEIRK0ecCFLl2Qo55z52Hss+UV9CRN7trSeq1zbgx7YDWWg==}
 
-  '@types/uuid@9.0.8':
-    resolution: {integrity: sha512-jg+97EGIcY9AGHJJRaaPVgetKDsrTgbRjQ5Msgjh/DQKEFl0DtyRr/VCOyD1T2R1MNeWPK/u7JoGhlDZnKBAfA==}
+  '@types/uuid@11.0.0':
+    resolution: {integrity: sha512-HVyk8nj2m+jcFRNazzqyVKiZezyhDKrGUA3jlEcg/nZ6Ms+qHwocba1Y/AaVaznJTAM9xpdFSh+ptbNrhOGvZA==}
+    deprecated: This is a stub types definition. uuid provides its own type definitions, so you do not need this installed.
 
   '@types/webidl-conversions@7.0.3':
     resolution: {integrity: sha512-CiJJvcRtIgzadHCYXw7dqEnMNRjhGZlYK05Mj9OyktqV8uVT8fD2BFOB7S1uwBE3Kj2Z+4UyPmFw/Ixgw/LAlA==}
@@ -3005,7 +3006,9 @@ snapshots:
     dependencies:
       csstype: 3.2.3
 
-  '@types/uuid@9.0.8': {}
+  '@types/uuid@11.0.0':
+    dependencies:
+      uuid: 13.0.0
 
   '@types/webidl-conversions@7.0.3': {}
 
