@@ -27,6 +27,8 @@ ENV APP_HOST_URL=${APP_HOST_URL}
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+RUN sh create_build_info.sh
+
 RUN corepack enable pnpm && pnpm run build --webpack
 
 FROM base AS runner

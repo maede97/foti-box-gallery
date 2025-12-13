@@ -15,6 +15,15 @@ Visit [foti-box.com](https://foti-box.com)!
 - Next
 - pnpm package manager
 
+## Developer Setup
+```
+cp env.example .env
+docker compose up -d mongo mongo-express
+bash create_build_info.sh
+pnpm i
+pnpm run dev
+```
+
 ## Functionality
 
 - Admin panel (add events, boxes, manage images)

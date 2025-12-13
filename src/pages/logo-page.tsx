@@ -14,7 +14,6 @@ const LogoPage: React.FC<{ children }> = ({ children }) => {
 
         <div className="flex flex-col items-center gap-2 text-center md:items-start md:text-left">
           <h1 className="mb-4 text-4xl font-semibold tracking-wide uppercase">foti-box.com</h1>
-
           {children}
         </div>
       </div>

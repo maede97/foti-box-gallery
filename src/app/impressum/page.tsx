@@ -1,3 +1,4 @@
+import build from '@/build';
 import LogoPage from '@/pages/logo-page';
 import { ExternalLink } from 'lucide-react';
 import { Metadata } from 'next';
@@ -30,6 +31,13 @@ const ImpressumPage: React.FC = () => {
       >
         https://github.com/maede97/foti-box <ExternalLink className="size-4" />
       </Link>
+      <span className="p-2"></span>
+      <span className="text-sm tracking-wide">
+        Version {build.version} vom {build.timestamp}
+      </span>
+      <span className="text-sm tracking-wide">
+        Git Branch {build.git.branch}, {build.git.hash}
+      </span>
     </LogoPage>
   );
 };
