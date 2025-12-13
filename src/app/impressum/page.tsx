@@ -36,7 +36,7 @@ const ImpressumPage: React.FC = () => {
         Version {build.version} vom {build.timestamp}
       </span>
       <span className="text-sm tracking-wide">
-        Git Branch {build.git.branch}, {build.git.hash}
+        Git Branch {build.git.branch}, Hash {build.git.hash}
       </span>
     </LogoPage>
   );
