@@ -61,7 +61,7 @@ export async function GET(req: Request) {
       headers: {
         'Content-Type': image.mimetype || 'application/octet-stream',
         'Content-Length': fileBuffer.length.toString(),
-        'Content-Disposition': `attachment; filename="${image.uuid}.${image.extension}"`,
+        'Content-Disposition': `attachment; filename="${image.uuid}${image.extension}"`,
       },
     });
   } catch (err) {

@@ -284,6 +284,23 @@ export default function AdminPage() {
     fetchEvents();
   }
 
+  async function handleSetAllowImageDownload(eventId: ObjectId, allow_download: boolean) {
+    const res = await fetch('/api/admin/allow-download', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ eventId, allow_download }),
+    });
+    if (!res.ok) {
+      const data = await res.json();
+      setError(data.error || 'Event konnte nicht verändert werden.');
+      return;
+    }
+    fetchEvents();
+  }
+
   async function handleAddLogo() {
     const eventId = showAddLogo; // grab eventid from setState, as string
 
@@ -472,7 +489,7 @@ export default function AdminPage() {
               <th className="p-3">Name</th>
               <th className="p-3">Slug</th>
               <th className="p-3">Passwort</th>
-              <th className="p-3">Gäste Upload</th>
+              <th className="p-3">Gäste Upload / Download</th>
               <th className="p-3">Logo</th>
               <th className="p-3">Event aktiv</th>
               <th className="p-3">Aktionen</th>
@@ -522,7 +539,9 @@ export default function AdminPage() {
                 </td>
 
                 <td className="block p-3 md:table-cell">
-                  <span className="text-primary/60 mb-1 block text-sm md:hidden">Gäste Upload</span>
+                  <span className="text-primary/60 mb-1 block text-sm md:hidden">
+                    Gäste Upload / Download
+                  </span>
                   <button
                     onClick={() => handleSetAllowUserUpload(evt._id, !evt.allow_user_uploads)}
                     className={`cursor-pointer rounded-xl px-3 py-1 font-semibold transition ${
@@ -531,7 +550,18 @@ export default function AdminPage() {
                         : 'bg-error hover:bg-error-dark'
                     }`}
                   >
-                    {evt.allow_user_uploads ? 'Ja' : 'Nein'}
+                    Upload
+                  </button>
+
+                  <button
+                    onClick={() => handleSetAllowImageDownload(evt._id, !evt.allow_download)}
+                    className={`cursor-pointer rounded-xl px-3 py-1 font-semibold transition ${
+                      evt.allow_download
+                        ? 'bg-success hover:bg-success-dark'
+                        : 'bg-error hover:bg-error-dark'
+                    }`}
+                  >
+                    Download
                   </button>
                 </td>
 

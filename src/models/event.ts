@@ -6,6 +6,7 @@ export interface IEvent extends Document {
   password: string;
   active: boolean;
   allow_user_uploads: boolean;
+  allow_download: boolean;
   logo: string | undefined;
 }
 
@@ -15,6 +16,7 @@ const EventSchema = new Schema<IEvent>({
   password: { type: String, required: false, default: '' },
   active: { type: Boolean, default: false },
   allow_user_uploads: { type: Boolean, default: false },
+  allow_download: { type: Boolean, default: true },
   logo: { type: String, required: false },
 });
 

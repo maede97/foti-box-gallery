@@ -1,5 +1,6 @@
 import Footer from '@/components/ui/footer';
 import { connectToDatabase } from '@/lib/mongodb';
+import event from '@/models/event';
 import image from '@/models/image';
 import GallerySingleImageClient from '@/pages/gallery-single-image-client';
 import { notFound } from 'next/navigation';
@@ -20,10 +21,13 @@ const GalleryPage: React.FC<{ params: ParamsType }> = async ({ params }) => {
     notFound();
   }
 
+  // check if the accompanying event allows for downloads
+  const imageEvent = await event.findById(dbImage.event);
+
   return (
     <div className="flex min-h-screen flex-col">
       <main className="m-6 flex-1">
-        <GallerySingleImageClient uuid={uuid} />
+        <GallerySingleImageClient uuid={uuid} allowDownload={imageEvent.allow_download} />
       </main>
 
       <Footer />
